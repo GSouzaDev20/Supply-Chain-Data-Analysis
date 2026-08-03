@@ -1,15 +1,16 @@
 import sqlite3
 import pandas as pd
-import os
+from pathlib import Path
 
 def csv_to_sql():
 
     print('Reading CSV Path...')
 
-    csv_path = '/workspaces/Data_Analysis/Supply Chain Analisys/Data/supply_chain_data_RAW.csv'
-    db_path = '/workspaces/Data_Analysis/Supply Chain Analisys/DB/supply_chain.db'
+    BASE_DIR = Path(__file__).resolve().parent.parent
+    csv_path = BASE_DIR / 'Raw_Data' / 'supply_chain_data_RAW.csv'
+    db_path = BASE_DIR / 'DB' / 'supply_chain.db'
 
-    if not os.path.exists(csv_path):
+    if not csv_path.exists():
         print('CSV not found')
         return
     else:
@@ -45,6 +46,7 @@ def csv_to_sql():
     print('Data processed, writing to database...')
 
     # connect to SQLite and write the DataFrame to a table
+    db_path.parent.mkdir(parents=True, exist_ok=True)  # Ensure the DB directory exists
     conn = sqlite3.connect(db_path)
     try:
         df.to_sql('supply_chain_data', conn, if_exists='replace', index=False)
